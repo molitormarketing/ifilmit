@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useClerk } from "@clerk/nextjs";
 import { supabase } from "../lib/supabase";
 
 // ─────────────────────────────────────────────
@@ -1583,12 +1582,13 @@ function ClientBoard({ client, role, onBack, onUpdateClient, onLogout }) {
 // ROOT
 // ─────────────────────────────────────────────
 
-export default function FilmIt({ userInfo }) {
-  const { signOut } = useClerk();
+export default function FilmIt() {
+  const [userRole, setUserRole] = useState(null);
+  const [userClientId, setUserClientId] = useState(null);
   const [clients, setClients] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  const [view, setView] = useState(userInfo.role === "agency" ? "dashboard" : "board");
-  const [activeClientId, setActiveClientId] = useState(userInfo.role === "creator" ? userInfo.clientId : null);
+  const [view, setView] = useState("login");
+  const [activeClientId, setActiveClientId] = useState(null);
   const [showAddClient, setShowAddClient] = useState(false);
 
   // Load all clients + their data from Supabase
@@ -1621,9 +1621,9 @@ export default function FilmIt({ userInfo }) {
         };
       }));
       setClients(enriched);
-      // If creator, set their client
-      if (userInfo.role === "creator" && userInfo.clientId) {
-        setActiveClientId(userInfo.clientId);
+      // If creator role set, auto-select their client
+      if (userClientId) {
+        setActiveClientId(userClientId);
       }
       setLoaded(false);
       setTimeout(() => setLoaded(true), 100);
@@ -1631,7 +1631,7 @@ export default function FilmIt({ userInfo }) {
     load();
   }, []);
 
-  const handleLogout = () => signOut({ redirectUrl: "/sign-in" });
+  const handleLogout = () => { setUserRole(null); setUserClientId(null); setView("login"); };
 
   const handleUpdateClient = async (updatedClient) => {
     setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
@@ -1653,7 +1653,9 @@ export default function FilmIt({ userInfo }) {
   );
 
   const activeClient = clients.find(c => c.id === activeClientId);
-  const role = userInfo.role;
+  const role = userRole;
+
+  if (view === "login") return <LoginScreen clients={clients} onLogin={(role, clientId) => { setUserRole(role); setUserClientId(clientId); setView(role === "agency" ? "dashboard" : "board"); if(clientId) setActiveClientId(clientId); }} />;
 
   if (view === "dashboard" && role === "agency") return (
     <>
