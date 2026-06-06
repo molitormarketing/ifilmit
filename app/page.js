@@ -1,5 +1,4 @@
-import ContentHub from "../components/ContentHub";
-
+import FilmIt from "../components/FilmIt";
 export default function Home() {
-  return <ContentHub />;
+  return <FilmIt />;
 }
