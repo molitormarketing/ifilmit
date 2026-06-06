@@ -5,43 +5,35 @@
 }
 
 :root {
-  --font-dm-sans: 'DM Sans', sans-serif;
-  --font-dm-serif: 'DM Serif Display', serif;
-  --bg: #0a0a14;
-  --bg-card: #161622;
-  --bg-input: #0f0f1a;
-  --border: #2a2a4a;
-  --text: #e8e8ff;
-  --muted: #5050a0;
-  --purple: #7c3aed;
-  --blue: #0ea5e9;
-  --orange: #fb923c;
-  --yellow: #facc15;
-  --green: #4ade80;
-  --cyan: #38bdf8;
-  --violet: #a78bfa;
+  --white: #ffffff;
+  --off-white: #fdf6f8;
+  --light-pink: #fce8f0;
+  --mid-pink: #f9d0e2;
+  --hot-pink: #ff0066;
+  --hot-pink-dark: #cc0052;
+  --hot-pink-light: #ff4d94;
+  --hot-pink-bg: #fff0f6;
+  --black: #0a0a0a;
+  --dark: #1a1a1a;
+  --gray: #6b6b6b;
+  --light-gray: #e8e8e8;
+  --border: #f0d0dc;
+  --border-strong: #f5a0c0;
+  --shadow: 0 2px 12px rgba(255, 0, 102, 0.08);
+  --shadow-md: 0 4px 24px rgba(255, 0, 102, 0.12);
 }
 
 html, body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-dm-sans), sans-serif;
+  background: var(--off-white);
+  color: var(--black);
+  font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-button {
-  font-family: inherit;
-}
+button { font-family: inherit; cursor: pointer; }
+textarea, input { font-family: inherit; }
 
-textarea, input {
-  font-family: inherit;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4a4a7a; }
+::-webkit-scrollbar-thumb { background: var(--mid-pink); border-radius: 3px; }
