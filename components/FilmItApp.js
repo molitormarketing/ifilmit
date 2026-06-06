@@ -408,7 +408,7 @@ function LoginScreen({ onLogin }) {
 
   // Main login — split layout
   return (
-    <div style={{ minHeight:"100vh", background:"#0a0a0f", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+    <div style={{ minHeight:"100vh", background:"#fff0f6", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
       <div style={{ width:"100%", maxWidth:820, display:"flex", borderRadius:20, overflow:"hidden", border:"1px solid rgba(255,255,255,0.06)" }}>
 
         {/* Left — form */}
