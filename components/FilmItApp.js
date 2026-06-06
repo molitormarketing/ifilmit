@@ -412,7 +412,7 @@ function LoginScreen({ onLogin }) {
       <div style={{ width:"100%", maxWidth:820, display:"flex", borderRadius:20, overflow:"hidden", border:"1px solid rgba(255,255,255,0.06)" }}>
 
         {/* Left — form */}
-        <div style={{ flex:1, background:"#111118", padding:"48px 40px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
+        <div style={{ flex:1, background:"#ffffff", padding:"48px 40px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
           <div style={{ marginBottom:40 }}>
             <div style={{ fontFamily:"Georgia,serif", fontSize:28, color:"#fff", letterSpacing:-1, marginBottom:6 }}>✦ <span style={{ color:hp }}>Moli</span></div>
             <div style={{ fontSize:13, color:"rgba(255,255,255,0.35)", letterSpacing:0.3 }}>Creator management for modern agencies</div>
