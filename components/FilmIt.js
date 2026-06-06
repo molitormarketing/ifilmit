@@ -170,7 +170,7 @@ function Btn({ onClick, children, variant="primary", small, style:x, disabled })
 }
 
 const labelSt = { fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.65)", textTransform:"uppercase", letterSpacing:0.8, display:"block", marginBottom:6 };
-const inputSt = { width:"100%", background:"#1a1a2a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:10, padding:"9px 12px", color:"var(--text)", fontSize:13, outline:"none", resize:"vertical", boxSizing:"border-box" };
+const inputSt = { width:"100%", background:"#1a1a2a", border:"1px solid rgba(255,255,255,0.15)", borderRadius:10, padding:"9px 12px", color:"fff", fontSize:13, outline:"none", resize:"vertical", boxSizing:"border-box" };
 
 // ─────────────────────────────────────────────
 // STAT CARDS BAR (shown on every page)
