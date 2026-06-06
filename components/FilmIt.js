@@ -567,7 +567,7 @@ function Sidebar({ activeTab, onNavigate, onLogout, userInfo, clients }) {
   return (
     <div style={{ width:200, background:"#ff0066", borderRight:"none", padding:"24px 12px", display:"flex", flexDirection:"column", flexShrink:0, minHeight:"100vh", position:"sticky", top:0, height:"100vh" }}>
       <div style={{ fontFamily:"Georgia,serif", fontSize:20, color:"#ffffff", padding:"0 8px", marginBottom:32, letterSpacing:-0.5 }}>
-        <span style={{ color:"#fff" }}>✦</span> <span style={{ color:"#ff0066" }}>Moli</span>
+        <span style={{ color:"#fff" }}>✦</span> <span style={{ color:"#fff" }}>Moli</span>
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
         {navItems.map(item => (
