@@ -324,7 +324,7 @@ function AgencyDashboard({ clients, onSelectClient, onAddClient, onLogout, userI
       <div style={{ flex:1, overflow:"auto" }}>
         <div style={{ background:"#12121e", borderBottom:"1px solid var(--border)", padding:"16px 28px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div>
-            <div style={{ fontSize:18, fontWeight:500, color:"#1a1a2a", marginBottom:2 }}>Let's get to work 🔥</div>
+            <div style={{ fontSize:18, fontWeight:500, color:"#ff0066", marginBottom:2 }}>Let's get to work 🔥</div>
             <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>{new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} {pending>0?`· ${pending} item${pending>1?"s":""} need your attention`:""}</div>
           </div>
           <Btn small onClick={onAddClient}>+ Add Creator</Btn>
