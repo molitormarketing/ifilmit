@@ -473,7 +473,7 @@ function LoginScreen({ onLogin }) {
             ))}
             <div style={{ marginTop:20, borderTop:"1px solid rgba(255,255,255,0.2)", paddingTop:16 }}>
               <div style={{ fontSize:11, color:"rgba(255,255,255,0.6)", marginBottom:4 }}>Trusted by agencies managing</div>
-              <div style={{ fontSize:28, fontWeight:700, color:"#fff", lineHeight:1 }}>100+</div>
+              <div style={{ fontSize:28, fontWeight:700, color:"#fff", lineHeight:1 }}>Early Acess</div>
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.6)" }}>creators worldwide</div>
             </div>
           </div>
