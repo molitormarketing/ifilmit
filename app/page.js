@@ -1,7 +1,7 @@
-import FilmIt from "../components/FilmIt";
+import FilmItApp from "../components/FilmItApp";
 
 export const dynamic = "force-dynamic";
 
 export default function Home() {
-  return <FilmIt />;
+  return <FilmItApp />;
 }
