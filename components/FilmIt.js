@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useClerk } from "@clerk/nextjs";
+import { supabase } from "../lib/supabase";
 
 // ─────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────
-
-const STORAGE_KEY = "filmit-v3";
 const hp = "#ff0066";
 const hpBg = "#fff0f6";
 const hpDark = "#cc0052";
@@ -60,19 +60,104 @@ const SEED = {
 };
 
 // ─────────────────────────────────────────────
-// STORAGE
+// SUPABASE DATA LAYER
 // ─────────────────────────────────────────────
 
-function loadState() {
-  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch { return null; }
+async function fetchClients() {
+  const { data, error } = await supabase.from("clients").select("*").order("created_at");
+  if (error) { console.error("fetchClients:", error); return []; }
+  return data.map(c => ({
+    id: c.id, name: c.name, handle: c.handle, niche: c.niche,
+    avatar: c.avatar, color: c.color,
+    earnings: { agencyCut: c.agency_cut||20, agencyName: c.agency_name||"Your Agency", entries:[], brandDeals:[] },
+    platforms: {}, ideas: [],
+  }));
 }
-function saveState(s) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      ...s,
-      clients: s.clients.map(c => ({ ...c, ideas: c.ideas.map(i => ({ ...i, uploadedDataUrl: undefined })) })),
-    }));
-  } catch {}
+
+async function fetchIdeasForClient(clientId) {
+  const { data, error } = await supabase.from("ideas").select("*").eq("client_id", clientId).order("created_at");
+  if (error) { console.error("fetchIdeas:", error); return []; }
+  return data.map(i => ({
+    id: i.id, type: i.type, hook: i.hook, caption: i.caption||"",
+    tags: i.tags||[], status: i.status, notes: i.notes||"",
+    isUGC: i.is_ugc, deadline: i.deadline, brief: i.brief,
+    uploadedFileName: i.uploaded_file_name, uploadedAt: i.uploaded_at,
+    thread: [],
+  }));
+}
+
+async function fetchMessages(ideaId) {
+  const { data } = await supabase.from("messages").select("*").eq("idea_id", ideaId).order("created_at");
+  return (data||[]).map(m => ({ from: m.from_role, text: m.text, time: new Date(m.created_at).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) }));
+}
+
+async function saveClient(client) {
+  const { error } = await supabase.from("clients").upsert({
+    id: client.id, name: client.name, handle: client.handle,
+    niche: client.niche, avatar: client.avatar, color: client.color,
+    agency_cut: client.earnings?.agencyCut||20,
+    agency_name: client.earnings?.agencyName||"Your Agency",
+  });
+  if (error) console.error("saveClient:", error);
+}
+
+async function saveIdea(idea, clientId) {
+  const { error } = await supabase.from("ideas").upsert({
+    id: typeof idea.id === "number" ? undefined : idea.id,
+    client_id: clientId, type: idea.type, hook: idea.hook,
+    caption: idea.caption, tags: idea.tags, status: idea.status,
+    notes: idea.notes, is_ugc: idea.isUGC, deadline: idea.deadline||null,
+    brief: idea.brief||null, uploaded_file_name: idea.uploadedFileName||null,
+  });
+  if (error) console.error("saveIdea:", error);
+}
+
+async function deleteIdea(ideaId) {
+  await supabase.from("ideas").delete().eq("id", ideaId);
+}
+
+async function sendMessage(ideaId, fromRole, text) {
+  const { data } = await supabase.from("messages").insert({ idea_id: ideaId, from_role: fromRole, text }).select().single();
+  return data;
+}
+
+async function saveEarningsEntry(entry, clientId) {
+  await supabase.from("earnings_entries").upsert({ id: typeof entry.id==="number"?undefined:entry.id, client_id: clientId, platform: entry.platform, amount: entry.amount, note: entry.note||"", month: entry.month });
+}
+
+async function deleteEarningsEntry(entryId) {
+  await supabase.from("earnings_entries").delete().eq("id", entryId);
+}
+
+async function fetchEarningsEntries(clientId) {
+  const { data } = await supabase.from("earnings_entries").select("*").eq("client_id", clientId);
+  return (data||[]).map(e => ({ id: e.id, platform: e.platform, amount: e.amount, note: e.note, month: e.month }));
+}
+
+async function saveBrandDeal(deal, clientId) {
+  await supabase.from("brand_deals").upsert({ id: typeof deal.id==="number"?undefined:deal.id, client_id: clientId, brand: deal.brand, amount: deal.amount, description: deal.description||"", due_date: deal.dueDate||null, paid_date: deal.paidDate||null, status: deal.status, month: deal.month||null });
+}
+
+async function deleteBrandDeal(dealId) {
+  await supabase.from("brand_deals").delete().eq("id", dealId);
+}
+
+async function fetchBrandDeals(clientId) {
+  const { data } = await supabase.from("brand_deals").select("*").eq("client_id", clientId);
+  return (data||[]).map(d => ({ id: d.id, brand: d.brand, amount: d.amount, description: d.description, dueDate: d.due_date, paidDate: d.paid_date, status: d.status, month: d.month }));
+}
+
+async function savePlatformApp(app, clientId, platformId) {
+  await supabase.from("platform_applications").upsert({ id: typeof app.id==="number"?undefined:app.id, client_id: clientId, platform_id: platformId, brand: app.brand, amount: app.amount||null, description: app.description||"", brief: app.brief||"", deadline: app.deadline||null, applied_date: app.appliedDate||null, status: app.status });
+}
+
+async function deletePlatformApp(appId) {
+  await supabase.from("platform_applications").delete().eq("id", appId);
+}
+
+async function fetchPlatformApps(clientId) {
+  const { data } = await supabase.from("platform_applications").select("*").eq("client_id", clientId);
+  return (data||[]).map(a => ({ id: a.id, platformId: a.platform_id, brand: a.brand, amount: a.amount, description: a.description, brief: a.brief, deadline: a.deadline, appliedDate: a.applied_date, status: a.status }));
 }
 
 // ─────────────────────────────────────────────
@@ -1498,37 +1583,115 @@ function ClientBoard({ client, role, onBack, onUpdateClient, onLogout }) {
 // ROOT
 // ─────────────────────────────────────────────
 
-export default function FilmIt() {
-  const [state, setState] = useState(null);
+export default function FilmIt({ userInfo }) {
+  const { signOut } = useClerk();
+  const [clients, setClients] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  const [view, setView] = useState("login");
-  const [activeClientId, setActiveClientId] = useState(null);
+  const [view, setView] = useState(userInfo.role === "agency" ? "dashboard" : "board");
+  const [activeClientId, setActiveClientId] = useState(userInfo.role === "creator" ? userInfo.clientId : null);
   const [showAddClient, setShowAddClient] = useState(false);
 
-  useEffect(()=>{ const s=loadState(); setState(s||{...SEED,role:null}); setLoaded(true); },[]);
-  useEffect(()=>{ if(!loaded||!state)return; const t=setTimeout(()=>saveState(state),800); return()=>clearTimeout(t); },[state,loaded]);
+  // Load all clients + their data from Supabase
+  useEffect(() => {
+    async function load() {
+      const baseClients = await fetchClients();
+      const enriched = await Promise.all(baseClients.map(async (c) => {
+        const [ideas, entries, deals, apps] = await Promise.all([
+          fetchIdeasForClient(c.id),
+          fetchEarningsEntries(c.id),
+          fetchBrandDeals(c.id),
+          fetchPlatformApps(c.id),
+        ]);
+        // Load messages for each idea
+        const ideasWithThreads = await Promise.all(ideas.map(async (idea) => {
+          const thread = await fetchMessages(idea.id);
+          return { ...idea, thread };
+        }));
+        // Build platforms object from apps
+        const platforms = {};
+        apps.forEach(a => {
+          if (!platforms[a.platformId]) platforms[a.platformId] = { applications: [], notes: "" };
+          platforms[a.platformId].applications.push(a);
+        });
+        return {
+          ...c,
+          ideas: ideasWithThreads,
+          platforms,
+          earnings: { ...c.earnings, entries, brandDeals: deals },
+        };
+      }));
+      setClients(enriched);
+      // If creator, set their client
+      if (userInfo.role === "creator" && userInfo.clientId) {
+        setActiveClientId(userInfo.clientId);
+      }
+      setLoaded(false);
+      setTimeout(() => setLoaded(true), 100);
+    }
+    load();
+  }, []);
 
-  if(!loaded||!state) return <div style={{ minHeight:"100vh", background:"#fdf6f8", display:"flex", alignItems:"center", justifyContent:"center", color:"#ccc" }}>Loading FilmIt...</div>;
+  const handleLogout = () => signOut({ redirectUrl: "/sign-in" });
 
-  const handleLogin = (role,clientId) => { setState(s=>({...s,role})); if(role==="agency"){ setView("dashboard"); } else { setActiveClientId(clientId); setView("board"); } };
-  const handleLogout = () => { setState(s=>({...s,role:null})); setView("login"); setActiveClientId(null); };
-  const handleUpdateClient = (c) => setState(s=>({...s,clients:s.clients.map(x=>x.id===c.id?c:x)}));
-  const handleAddClient = (c) => setState(s=>({...s,clients:[...s.clients,c]}));
+  const handleUpdateClient = async (updatedClient) => {
+    setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+    await saveClient(updatedClient);
+  };
 
-  const activeClient = state.clients.find(c=>c.id===activeClientId);
+  const handleAddClient = async (client) => {
+    await saveClient(client);
+    setClients(prev => [...prev, { ...client, ideas: [], platforms: {}, earnings: { agencyCut: 20, agencyName: "Your Agency", entries: [], brandDeals: [] } }]);
+  };
 
-  if(view==="login") return <LoginScreen clients={state.clients} onLogin={handleLogin}/>;
+  if (!loaded) return (
+    <div style={{ minHeight: "100vh", background: "#fdf6f8", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontFamily: "Georgia,serif", fontSize: 28, color: "#ff0066", marginBottom: 12 }}>✦ FilmIt ✦</div>
+        <div style={{ color: "#ccc", fontSize: 14 }}>Loading your workspace...</div>
+      </div>
+    </div>
+  );
 
-  if(view==="dashboard"&&state.role==="agency") return (
+  const activeClient = clients.find(c => c.id === activeClientId);
+  const role = userInfo.role;
+
+  if (view === "dashboard" && role === "agency") return (
     <>
-      <AgencyDashboard clients={state.clients} onSelectClient={(id)=>{ setActiveClientId(id); setView("board"); }} onAddClient={()=>setShowAddClient(true)} onLogout={handleLogout}/>
-      {showAddClient&&<AddClientModal onAdd={handleAddClient} onClose={()=>setShowAddClient(false)}/>}
+      <AgencyDashboard
+        clients={clients}
+        onSelectClient={(id) => { setActiveClientId(id); setView("board"); }}
+        onAddClient={() => setShowAddClient(true)}
+        onLogout={handleLogout}
+      />
+      {showAddClient && <AddClientModal onAdd={handleAddClient} onClose={() => setShowAddClient(false)} />}
     </>
   );
 
-  if(view==="board"&&activeClient) return (
-    <ClientBoard client={activeClient} role={state.role} onBack={()=>setView("dashboard")} onUpdateClient={handleUpdateClient} onLogout={handleLogout}/>
+  if (view === "board" && activeClient) return (
+    <ClientBoard
+      client={activeClient}
+      role={role}
+      onBack={() => setView("dashboard")}
+      onUpdateClient={handleUpdateClient}
+      onLogout={handleLogout}
+      supabaseFns={{ saveIdea, deleteIdea, sendMessage, saveEarningsEntry, deleteEarningsEntry, saveBrandDeal, deleteBrandDeal, savePlatformApp, deletePlatformApp }}
+    />
   );
 
-  return <LoginScreen clients={state.clients} onLogin={handleLogin}/>;
+  // Creator with no client assigned
+  if (role === "creator" && !activeClient) return (
+    <div style={{ minHeight: "100vh", background: "#fdf6f8", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <div style={{ fontFamily: "Georgia,serif", fontSize: 28, color: "#ff0066", marginBottom: 12 }}>✦ FilmIt ✦</div>
+        <div style={{ fontSize: 15, color: "#6b6b6b", marginBottom: 20 }}>Your agency hasn't linked your account yet. Reach out to them to get set up!</div>
+        <button onClick={handleLogout} style={{ background: "#ff0066", color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontWeight: 700, cursor: "pointer" }}>Sign Out</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#fdf6f8", display: "flex", alignItems: "center", justifyContent: "center", color: "#ccc" }}>
+      Loading...
+    </div>
+  );
 }
