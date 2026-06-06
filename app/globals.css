@@ -1,0 +1,41 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #fdf6f8;
+  --bg-card: #ffffff;
+  --bg-sidebar: #0d0d18;
+  --bg-pink: #fff0f6;
+  --border: #f0d0dc;
+  --border-strong: #ffb3d1;
+  --hp: #ff0066;
+  --hp-dim: rgba(255,0,102,0.08);
+  --hp-border: rgba(255,0,102,0.2);
+  --text: #0a0a0a;
+  --text-secondary: #6b6b6b;
+  --text-muted: #b0b0b0;
+  --green: #16a34a;
+  --yellow: #b45309;
+  --purple: #7c3aed;
+  --blue: #0ea5e9;
+  --orange: #ea580c;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; cursor: pointer; }
+textarea, input, select { font-family: inherit; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #f0d0dc; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #ffb3d1; }
