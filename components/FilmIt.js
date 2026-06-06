@@ -1460,16 +1460,16 @@ function AnalyticsTab({ client, role, onUpdateClient }) {
 // ─────────────────────────────────────────────
 
 const PLATFORMS = [
-  { id:"cohley",     name:"Cohley",       url:"https://app.cohley.com",           color:"#ff6b35", desc:"UGC content platform — apply to product campaigns" },
-  { id:"fohr",       name:"Fohr",         url:"https://app.fohr.co",              color:"#6c63ff", desc:"Influencer marketplace — brand partnerships & gifting" },
-  { id:"later",      name:"Later",        url:"https://app.later.com",            color:"#ffd166", desc:"Social scheduling + brand collab opportunities" },
-  { id:"insense",    name:"Insense",      url:"https://insense.pro",              color:"#07b274", desc:"UGC & influencer briefs — fast-moving campaigns" },
-  { id:"upfluence",  name:"Upfluence",    url:"https://app.upfluence.com",        color:"#3b82f6", desc:"Enterprise brand partnerships & affiliate deals" },
-  { id:"impact",     name:"Impact",       url:"https://app.impact.com",           color:"#f43f5e", desc:"Affiliate & partnership network — commission tracking" },
-  { id:"aspire",     name:"Aspire",       url:"https://app.aspireiq.com",         color:"#8b5cf6", desc:"Brand collaboration marketplace & gifting campaigns" },
-  { id:"thelobby",   name:"The Lobby",    url:"https://thelobby.io",              color:"#0ea5e9", desc:"Creator community with exclusive brand deals" },
-  { id:"mavely",     name:"Mavely",       url:"https://app.joinmavely.com",       color:"#ec4899", desc:"Affiliate links + shoppable content monetization" },
-  { id:"ahacreator", name:"AHA Creator",  url:"https://ahacreator.com",           color:"#f97316", desc:"UGC briefs and paid creator campaigns" },
+  { id:"cohley",     name:"Cohley",       url:"https://cohley.com",           color:"#ff6b35", desc:"UGC content platform — apply to product campaigns" },
+  { id:"fohr",       name:"Fohr",         url:"https://fohr.co",              color:"#6c63ff", desc:"Influencer marketplace — brand partnerships & gifting" },
+  { id:"later",      name:"Later",        url:"https://later.com",            color:"#ffd166", desc:"Social scheduling + brand collab opportunities" },
+  { id:"insense",    name:"Insense",      url:"https://insense.pro/login",              color:"#07b274", desc:"UGC & influencer briefs — fast-moving campaigns" },
+  { id:"upfluence",  name:"Upfluence",    url:"https://www.upfluence.com",        color:"#3b82f6", desc:"Enterprise brand partnerships & affiliate deals" },
+  { id:"impact",     name:"Impact",       url:"https://impact.com",           color:"#f43f5e", desc:"Affiliate & partnership network — commission tracking" },
+  { id:"aspire",     name:"Aspire",       url:"https://www.aspireiq.com",         color:"#8b5cf6", desc:"Brand collaboration marketplace & gifting campaigns" },
+  { id:"thelobby",   name:"The Lobby",    url:"https://www.thelobby.io",              color:"#0ea5e9", desc:"Creator community with exclusive brand deals" },
+  { id:"mavely",     name:"Mavely",       url:"https://joinmavely.com",       color:"#ec4899", desc:"Affiliate links + shoppable content monetization" },
+  { id:"ahacreator", name:"AHA Creator",  url:"https://www.ahacreator.com",           color:"#f97316", desc:"UGC briefs and paid creator campaigns" },
 ];
 
 const APP_STATUS = {
