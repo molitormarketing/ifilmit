@@ -1,4 +1,4 @@
-import FilmItApp from "../components/MoliApp";
+import MoliApp from "../components/MoliApp";
 
 export const dynamic = "force-dynamic";
 
