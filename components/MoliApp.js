@@ -463,8 +463,8 @@ function LoginScreen({ onLogin }) {
             <div style={{ fontSize:12, color:"rgba(255,255,255,0.6)", lineHeight:1.5 }}>The all-in-one platform for creator agencies</div>
           </div>
           <div style={{ position:"relative" }}>
-            <div style={{ fontSize:36, fontWeight:800, color:"#fff", lineHeight:1.1, marginBottom:12 }}>Manage<br/>Creators.</div>
-            <div style={{ fontSize:18, color:"rgba(255,255,255,0.8)", fontWeight:600 }}>Join Now.</div>
+            <div style={{ fontSize:36, fontWeight:800, color:"#fff", lineHeight:1.1, marginBottom:12 }}>Elevate<br/>Creators.</div>
+            <div style={{ fontSize:18, color:"rgba(255,255,255,0.8)", fontWeight:600 }}>Beyond Content.</div>
           </div>
         </div>
 
