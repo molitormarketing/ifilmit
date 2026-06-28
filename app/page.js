@@ -1,7 +1,7 @@
-import FilmItApp from "../components/moliApp";
+import FilmItApp from "../components/MoliApp";
 
 export const dynamic = "force-dynamic";
 
 export default function Home() {
-  return <moliApp />;
+  return <MoliApp />;
 }
