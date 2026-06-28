@@ -248,6 +248,7 @@ function AgencyDashboard({ clients, onSelectClient, onAddClient, onLogout, userI
   const [brandNicheFilter, setBrandNicheFilter] = useState("all");
   const [brandSponsorFilter, setBrandSponsorFilter] = useState("all");
   const [brandSearch, setBrandSearch] = useState("");
+  const [editingBrand, setEditingBrand] = useState(null);
 
   const ALL_NICHES_LIST = ["beauty","makeup","skincare","fashion","lifestyle","haircare","home","fitness","wellness","travel","food","cooking","parenting","tech","gaming","finance","interior design","pets","books","photography","comedy","music","sports","clean living"];
 
@@ -668,6 +669,47 @@ function AgencyDashboard({ clients, onSelectClient, onAddClient, onLogout, userI
                       {ALL_NICHES_LIST.map(n=>(
                         <button key={n} onClick={()=>setBrandForm(f=>({ ...f, niches: f.niches.includes(n)?f.niches.filter(x=>x!==n):[...f.niches,n] }))} style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, cursor:"pointer", background:brandForm.niches.includes(n)?hp:"transparent", color:brandForm.niches.includes(n)?"#fff":"#999", border:`1.5px solid ${brandForm.niches.includes(n)?hp:"#f0d0dc"}` }}>{n}</button>
                       ))}
+{editingBrand && (
+  <Modal onClose={()=>setEditingBrand(null)} title={`Edit ${editingBrand.brand_name}`}>
+    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+      <div>
+        <label style={labelSt}>Niches</label>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {ALL_NICHES_LIST.map(n => {
+            const niches = Array.isArray(editingBrand.niches) ? editingBrand.niches : JSON.parse(editingBrand.niches||"[]");
+            const active = niches.includes(n);
+            return (
+              <button key={n} onClick={()=>{
+                const current = Array.isArray(editingBrand.niches) ? editingBrand.niches : JSON.parse(editingBrand.niches||"[]");
+                const updated = active ? current.filter(x=>x!==n) : [...current, n];
+                setEditingBrand(b=>({...b, niches: updated}));
+              }} style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, cursor:"pointer", background:active?hp:"transparent", color:active?"#fff":"#999", border:`1.5px solid ${active?hp:"#f0d0dc"}` }}>
+                {n}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+        <input type="checkbox" id="edit-sponsoring" checked={editingBrand.actively_sponsoring||false}
+          onChange={e=>setEditingBrand(b=>({...b,actively_sponsoring:e.target.checked}))}
+          style={{ width:16, height:16, accentColor:hp }}/>
+        <label htmlFor="edit-sponsoring" style={{ fontSize:13, color:"#0a0a0a", cursor:"pointer" }}>Actively sponsoring creators</label>
+      </div>
+      <div style={{ display:"flex", gap:10, marginTop:4 }}>
+        <Btn variant="ghost" onClick={()=>setEditingBrand(null)} style={{ flex:1 }}>Cancel</Btn>
+        <Btn onClick={async ()=>{
+          await supabase.from("brands").update({
+            niches: editingBrand.niches,
+            actively_sponsoring: editingBrand.actively_sponsoring,
+          }).eq("id", editingBrand.id);
+          setAllBrands(prev => prev.map(b => b.id===editingBrand.id ? {...b, niches:editingBrand.niches, actively_sponsoring:editingBrand.actively_sponsoring} : b));
+          setEditingBrand(null);
+        }} style={{ flex:2 }}>Save Changes</Btn>
+      </div>
+    </div>
+  </Modal>
+)}
                     </div>
                   </div>
                   <div style={{ display:"flex", alignItems:"center", gap:10 }}>
