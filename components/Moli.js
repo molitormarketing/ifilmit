@@ -642,6 +642,7 @@ function AgencyDashboard({ clients, onSelectClient, onAddClient, onLogout, userI
                         </div>
                         {b.pr_email && <div style={{ fontSize:12, color:"#7c3aed", fontFamily:"monospace" }}>{b.pr_email}</div>}
                         {b.pr_contact && <div style={{ fontSize:12, color:"#6b6b6b" }}>{b.pr_contact}</div>}
+<button onClick={()=>setEditingBrand(b)} style={{ background:"transparent", border:"1.5px solid #f0d0dc", borderRadius:8, padding:"5px 12px", fontSize:12, fontWeight:700, color:hp, cursor:"pointer" }}>Edit</button>
                       </div>
                     );
                   })}
