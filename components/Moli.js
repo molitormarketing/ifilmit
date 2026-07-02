@@ -1036,9 +1036,9 @@ function CSVUploadModal({ onImport, onClose }) {
         const lines = e.target.result.split("\n").filter(l=>l.trim());
         const headers = lines[0].split(",").map(h=>h.trim().split('"').join(""));
         const rows = lines.slice(1).map(line => {
-          const vals = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+          const vals = line.split(",").map(v=>v.trim()) || [];
           const obj = {};
-          headers.forEach((h,i) => { obj[h] = (vals[i]||"").split('"').join("").split('"')).join("").trim(); });
+          headers.forEach((h,i) => { obj[h] = (vals[i]||"").split('"').join("").trim(); });
           return obj;
         }).filter(r=>r.hook);
         setPreview(rows);
