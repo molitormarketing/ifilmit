@@ -942,7 +942,7 @@ function AddClientModal({ onAdd, onClose, agencyCode }) {
     const client = {
       id: "client-" + Date.now(),
       name: form.name,
-      handle: form.handle || "@" + form.name.toLowerCase().replace(/\s/g, ""),
+      handle: form.handle || "@" + form.name.toLowerCase().split(" ").join(""),
       niche: form.niche,
       avatar: form.name[0].toUpperCase(),
       color: form.color,
@@ -1034,11 +1034,11 @@ function CSVUploadModal({ onImport, onClose }) {
     reader.onload = (e) => {
       try {
         const lines = e.target.result.split("\n").filter(l=>l.trim());
-        const headers = lines[0].split(",").map(h=>h.trim().replace(/"/g,""));
+        const headers = lines[0].split(",").map(h=>h.trim().split('"').join(""));
         const rows = lines.slice(1).map(line => {
           const vals = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
           const obj = {};
-          headers.forEach((h,i) => { obj[h] = (vals[i]||"").replace(/^"|"$/g,"").trim(); });
+          headers.forEach((h,i) => { obj[h] = (vals[i]||"").split('"').join("").split('"')).join("").trim(); });
           return obj;
         }).filter(r=>r.hook);
         setPreview(rows);
@@ -1328,7 +1328,7 @@ function AddIdeaModal({ onAdd, onClose, isCreator }) {
           <Btn variant="ghost" onClick={onClose} style={{ flex:1 }}>Cancel</Btn>
           <Btn variant={isCreator?"outline":"primary"} onClick={()=>{
             if(!form.hook.trim())return;
-            onAdd({ id:Date.now(), type:form.type, hook:form.hook, caption:form.caption, tags:form.tags.split(",").map(t=>t.trim().replace(/^#/,"")).filter(Boolean), status:isCreator?"pending":"idea", notes:"", thread:[], uploadedFileName:null, uploadedAt:null, isUGC:form.isUGC, deadline:form.deadline||null, brief:form.brief||null });
+            onAdd({ id:Date.now(), type:form.type, hook:form.hook, caption:form.caption, tags:form.tags.split(",").map(t=>t.trim().startsWith("#")?t.trim().slice(1):t.trim()).filter(Boolean), status:isCreator?"pending":"idea", notes:"", thread:[], uploadedFileName:null, uploadedAt:null, isUGC:form.isUGC, deadline:form.deadline||null, brief:form.brief||null });
             onClose();
           }} style={{ flex:2 }}>{isCreator?"📤 Submit for Approval":"+ Add Idea"}</Btn>
         </div>
@@ -1416,7 +1416,7 @@ function generateInvoice({ client, month, entries, deals, agencyCut, agencyName 
   const blob = new Blob([html],{type:"text/html"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  const safeName = client.name.replace(/\s/g,"-"); a.href=url; a.download="Moli-Invoice-"+safeName+"-"+month+".html";
+  const safeName = client.name.split(" ").join("-"); a.href=url; a.download="Moli-Invoice-"+safeName+"-"+month+".html";
   a.click(); URL.revokeObjectURL(url);
 }
 
@@ -1981,7 +1981,7 @@ function AnalyticsTab({ client, role, onUpdateClient }) {
 
   const formatNum = (n) => {
     if (!n) return "—";
-    const num = Number(String(n).replace(/,/g,""));
+    const num = Number(String(n).split(",").join(""));
     if (isNaN(num)) return n;
     if (num >= 1000000) return (num/1000000).toFixed(1) + "M";
     if (num >= 1000) return (num/1000).toFixed(1) + "K";
@@ -2075,8 +2075,8 @@ function AnalyticsTab({ client, role, onUpdateClient }) {
                   const prevFollowers = getMetricValue(platform.id, platform.metrics[0], prevMonth);
                   const currFollowers = getMetricValue(platform.id, platform.metrics[0], selectedMonth);
                   if (!prevFollowers || !currFollowers) return null;
-                  const prev = Number(String(prevFollowers).replace(/,/g,""));
-                  const curr = Number(String(currFollowers).replace(/,/g,""));
+                  const prev = Number(String(prevFollowers).split(",").join(""));
+                  const curr = Number(String(currFollowers).split(",").join(""));
                   const diff = curr - prev;
                   const pct = prev > 0 ? ((diff/prev)*100).toFixed(1) : 0;
                   if (!diff) return null;
